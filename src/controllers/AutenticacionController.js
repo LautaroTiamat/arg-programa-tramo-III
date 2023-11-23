@@ -1,21 +1,36 @@
 const jwt = require('jsonwebtoken');
+const UsuarioModel = require('./../models/mongoose/UsuarioModel.js');
 
 const AutenticacionController = {}
 
 const JWT_KEY = process.env.JWT_KEY;
 
-const usuarios = [
-    { id: 1, usuario: 'Lord', contrasenia: '123456' },
-    { id: 2, usuario: 'Lady', contrasenia: 'abcdef' },
-];
+AutenticacionController.autenticar = async (req, res) => {
+    try {
+        const { usuario, contrasenia } = req.body;
 
-AutenticacionController.autenticar = (req, res) => {
-    const usuario = req.body.usuario;
+        const usuarioEncontrado = await UsuarioModel.findOne({
+            usuario: usuario,
+            contrasenia: contrasenia,
+        });
 
-    // Simular autenticación
-    let token = jwt.sign({ usuario: usuario }, JWT_KEY);
+        if (!usuarioEncontrado) {
+            return res.status(404).json({ mensaje: 'El usuario no fué encontrado.' });
+        }
 
-    res.json({ token: token });
+        const datos = {
+            id: usuarioEncontrado._id,
+            usuario: usuarioEncontrado.usuario,
+            nombres: usuarioEncontrado.nombres,
+            apellidos: usuarioEncontrado.apellidos,
+        }
+
+        let token = jwt.sign(datos, JWT_KEY, { expiresIn: '1h' });
+
+        res.json({ token: token, datos: datos });
+    } catch (error) {
+        return res.status(500).json({ mensaje: 'Se produjo un error interno.' });
+    }
 }
 
 AutenticacionController.registrar = (req, res) => {

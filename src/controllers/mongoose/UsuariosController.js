@@ -41,9 +41,11 @@ UsuariosController.verUsuario = async (req, res) => {
 // Crear usuario
 UsuariosController.crearUsuario = async (req, res) => {
     try {
-        const { nombres, apellidos } = req.body;
+        const { usuario, contrasenia, nombres, apellidos } = req.body;
 
         const nuevoUsuario = new UsuarioModel({
+            usuario: usuario,
+            contrasenia: contrasenia,
             nombres: nombres,
             apellidos: apellidos,
         });
