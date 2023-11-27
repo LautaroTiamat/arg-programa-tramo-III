@@ -7,7 +7,7 @@ const PosteosController = {}
 // Ver publicaciones
 PosteosController.verPosteos = async (req, res) => {
     try {
-        const listaPosteos = await PosteoModel.find() //.populate('usuario');
+        const listaPosteos = await PosteoModel.find().populate('autor');
         
         return res.json(listaPosteos);
     } catch (error) {
@@ -78,9 +78,25 @@ PosteosController.crearPosteo = async (req, res) => {
 // Editar publicación
 PosteosController.editarPosteo = async (req, res) => {
     try {
-        const { id, titulo, descripcion, autor } = req.body;
+        const { id, titulo, descripcion } = req.body;
+        const { token } = req.headers;
 
-        // Validar el autor...
+        const tokenValido = verificarToken(token);
+
+        if (!tokenValido) {
+            return res.status(500).json({
+                mensaje: 'El token no es válido'
+            });
+        }
+
+        const userId = tokenValido.id;
+        const posteo = await PosteoModel.findById(id);
+
+        if (posteo.autor.toString() !== userId) {
+            return res.status(500).json({
+                mensaje: 'El autor no es el mismo'
+            });
+        }
 
         await PosteoModel.findByIdAndUpdate(
             id,
