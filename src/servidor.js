@@ -30,3 +30,5 @@ app.listen(PORT, () => {
     //database();
     conectarMongo();
 });
+
+module.exports = app;
