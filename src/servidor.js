@@ -13,7 +13,7 @@ const archivoRouter = require('./routes/archivoRouter.js');
 const georefRouter = require('./routes/georefRouter.js');*/
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
